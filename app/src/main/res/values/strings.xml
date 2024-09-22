@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MyTodoList</string>
+    <string name="addTask">+</string>
+    <string name="task_name">Task Name</string>
+    <string name="task_description">Task Description</string>
+    <string name="task_start_datetime">Start Date and Time</string>
+    <string name="task_end_datetime">End Date and Time</string>
+    <string name="delete_button">Delete</string>
+    <string name="update_button">Update</string>
+
+</resources>
