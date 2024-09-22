@@ -8,29 +8,33 @@
         android:id="@+id/taskNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Task Name" />
+        android:hint="@string/task_name"
+        android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/taskDescriptionEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Task Description" />
+        android:hint="@string/task_description"
+        android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/taskStartDateTimeEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Start Date and Time (yyyy-MM-dd HH:mm)" />
+        android:hint="@string/task_start_datetime"
+        android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/taskEndDateTimeEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="End Date and Time (yyyy-MM-dd HH:mm)" />
+        android:hint="@string/task_end_datetime"
+        android:minHeight="48dp" />
 
     <Button
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save" />
+        android:text="@string/save_button" />
 </LinearLayout>

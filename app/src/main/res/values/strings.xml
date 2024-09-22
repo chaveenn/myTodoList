@@ -9,4 +9,5 @@
     <string name="save_button">Save</string>
     <string name="edit_button">edit</string>
     <string name="add_button">Add</string>
+    <string name="todo">TODO</string>
 </resources>

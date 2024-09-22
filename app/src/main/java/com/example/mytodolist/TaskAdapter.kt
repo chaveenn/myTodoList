@@ -14,7 +14,7 @@ import java.util.Locale
 class TaskAdapter(
     private val tasks: List<Task>,
     private val onTaskDeleted: (Int) -> Unit,
-    private val onTaskUpdated: (Task, Int) -> Unit
+    private val onTaskUpdated: (Task, Int) -> Unit  // Correct type for updating a task
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -32,9 +32,7 @@ class TaskAdapter(
             }
             updateButton.setOnClickListener {
                 val task = tasks[adapterPosition]
-                // Logic for updating the task
-                val updatedTask = task.copy(name = "${task.name} (Updated)")
-                onTaskUpdated(updatedTask, adapterPosition)
+                onTaskUpdated(task, adapterPosition)  // Corrected function call with task and position
             }
         }
     }
