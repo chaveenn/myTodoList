@@ -1,87 +1,73 @@
-package com.example.mytodolist
+package com.example.todolist
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mytodolist.AddTaskActivity
+import com.example.mytodolist.R
+import com.example.mytodolist.Task
+import com.example.mytodolist.TaskAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity(), TaskAdapter.OnTaskClickListener {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var taskAdapter: TaskAdapter
-    private lateinit var tasks: MutableList<Task>
+    private val tasks = mutableListOf<Task>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        tasks = loadTasks()
+        setupRecyclerView()
+        setupAddButton()
+    }
 
+    private fun setupRecyclerView() {
+        taskAdapter = TaskAdapter(tasks, this::onTaskDeleted, this::onTaskUpdated)
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-        taskAdapter = TaskAdapter(tasks, this)
         recyclerView.adapter = taskAdapter
+    }
 
+    private fun setupAddButton() {
         val addButton: FloatingActionButton = findViewById(R.id.addButton)
         addButton.setOnClickListener {
-            addTask()
+            val intent = Intent(this, AddTaskActivity::class.java)
+            startActivityForResult(intent, ADD_TASK_REQUEST_CODE)
         }
     }
 
-    private fun addTask() {
-        // Create a new task here
-        val task = Task("New Task", "Description", "Start Date", "End Date", false)
-        tasks.add(task)
-        saveTasks()
-        taskAdapter.notifyItemInserted(tasks.size - 1)
-        setAlarm(task)
-    }
-
-    private fun saveTasks() {
-        val sharedPref = getSharedPreferences("TaskPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPref.edit()
-        editor.putStringSet("tasks", tasks.map { "${it.name}|${it.description}|${it.startDateTime}|${it.endDateTime}|${it.isViewed}" }.toSet())
-        editor.apply()
-    }
-
-    private fun loadTasks(): MutableList<Task> {
-        val sharedPref = getSharedPreferences("TaskPrefs", Context.MODE_PRIVATE)
-        val taskStrings = sharedPref.getStringSet("tasks", setOf()) ?: return mutableListOf()
-        return taskStrings.map {
-            val parts = it.split("|")
-            Task(parts[0], parts[1], parts[2], parts[3], parts[4].toBoolean())
-        }.toMutableList()
-    }
-
-    private fun setAlarm(task: Task) {
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, NotificationReceiver::class.java).apply {
-            putExtra("taskName", task.name)
-        }
-        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, pendingIntent) // Example
-    }
-
-    override fun onDeleteClick(position: Int) {
+    private fun onTaskDeleted(position: Int) {
         tasks.removeAt(position)
-        saveTasks()
         taskAdapter.notifyItemRemoved(position)
+        Toast.makeText(this, "Task deleted", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onUpdateClick(position: Int) {
-        tasks[position].name = "Updated Task"
-        saveTasks()
+    private fun onTaskUpdated(updatedTask: Task, position: Int) {
+        tasks[position] = updatedTask
         taskAdapter.notifyItemChanged(position)
+        Toast.makeText(this, "Task updated", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onViewClick(position: Int) {
-        tasks[position].isViewed = !tasks[position].isViewed
-        saveTasks()
-        taskAdapter.notifyItemChanged(position)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ADD_TASK_REQUEST_CODE && resultCode == RESULT_OK) {
+            val name = data?.getStringExtra("task_name") ?: return
+            val description = data?.getStringExtra("task_description") ?: return
+            val startDateTime = data?.getLongExtra("task_start_datetime", 0) ?: return
+            val endDateTime = data?.getLongExtra("task_end_datetime", 0) ?: return
+
+            val newTask = Task(name, description, startDateTime, endDateTime)
+            tasks.add(newTask)
+            taskAdapter.notifyItemInserted(tasks.size - 1)
+        }
+    }
+
+    companion object {
+        private const val ADD_TASK_REQUEST_CODE = 1
     }
 }

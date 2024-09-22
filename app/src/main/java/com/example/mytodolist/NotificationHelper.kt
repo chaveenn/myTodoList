@@ -1,5 +1,6 @@
 package com.example.mytodolist
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
@@ -10,6 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 
 class NotificationReceiver : BroadcastReceiver() {
+    @SuppressLint("NotificationPermission")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context?, intent: Intent?) {
         val taskName = intent?.getStringExtra("taskName")

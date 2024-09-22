@@ -1,9 +1,9 @@
 package com.example.mytodolist
 
+
 data class Task(
-    var name: String,
-    var description: String,
-    var startDateTime: String,
-    var endDateTime: String,
-    var isViewed: Boolean
+    val name: String,
+    val description: String,
+    val startDateTime: Long,
+    val endDateTime: Long
 )
